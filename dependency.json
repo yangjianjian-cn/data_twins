@@ -1,0 +1,68 @@
+{
+    "t90_sample": {
+        "primary_key": [],
+        "dep_table": "store_dim_sample",
+        "dep_relation": "1:5",
+        "dependencies": {
+            "gtin_code": {
+                "field": "store_code",
+                "func": ""
+            }
+        }
+    },
+    "gtin_dim_sample": {
+        "primary_key": [],
+        "dep_table": "t90_sample",
+        "dep_relation": "1:5",
+        "dependencies": {
+            "gtin_skey": {
+                "field": "gtin_code",
+                "func": ""
+            }
+        }
+    },
+    "store_dim_sample": {
+        "primary_key": [],
+        "dep_table": "",
+        "dep_relation": "",
+        "dependencies": {
+            "": {
+                "field": "",
+                "func": ""
+            }
+        }
+    },
+    "gtin_fpc_dim_sample": {
+        "primary_key": [],
+        "dep_table": "",
+        "dep_relation": "1:5",
+        "dependencies": {
+            "cust_product_skey": {
+                "field": "gtin_code",
+                "func": ""
+            }
+        }
+    },
+    "sales_channel_man_dim_sample": {
+        "primary_key": [],
+        "dep_table": "",
+        "dep_relation": "",
+        "dependencies": {
+            "": {
+                "field": "",
+                "func": ""
+            }
+        }
+    },
+    "gtin_price_advance_dim_sample": {
+        "primary_key": [],
+        "dep_table": "",
+        "dep_relation": "",
+        "dependencies": {
+            "": {
+                "field": "",
+                "func": ""
+            }
+        }
+    }
+}

@@ -1,0 +1,118 @@
+/* 全局样式 */
+body {
+    font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    color: #252423;
+    background-color: #f8f8f8;
+}
+
+/* Streamlit容器样式 */
+.stApp {
+    background-color: #f8f8f8;
+    /* 添加渐变背景颜色 */
+    background-image: linear-gradient(to bottom, #4567b7, #3498db);
+    background-size: 100% 50px;
+    background-repeat: no-repeat;
+}
+
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* 标题样式 */
+h1, h2, h3 {
+    color: #252423;
+    font-weight: 600;
+}
+
+/* 侧边栏样式 */
+.sidebar .sidebar-content {
+    background-color: #f3f2f1;
+}
+
+/* 按钮样式 */
+.stButton > button {
+    background-color: #0078d4;
+    color: white;
+    border: none;
+    border-radius: 8px; /* 增加圆角 */
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    /* 设置按钮长度 */
+    width: 180px; /* 可容纳7个汉字 */
+    text-align: center;
+}
+
+.stButton > button:hover {
+    background-color: #024c8e;
+    color: white;
+}
+
+.stButton > button:active,
+.stButton > button:focus {
+    background-color: #024c8e;
+    color: white;
+}
+
+/* 确保按钮文字在所有状态下都是白色 */
+.stButton > button > div {
+    color: white !important;
+}
+
+/* 输入框样式 */
+.stTextInput > div > div > input {
+    border: 1px solid #d2d0ce;
+    border-radius: 2px;
+}
+
+/* 选择框样式 */
+.stSelectbox > div > div > div {
+    border: 1px solid #d2d0ce;
+    border-radius: 2px;
+}
+
+/* 数据编辑器样式 */
+.stDataFrame {
+    border: 1px solid #d2d0ce;
+    border-radius: 2px;
+}
+
+.stDataFrame table {
+    background-color: white;
+}
+
+.stDataFrame th {
+    background-color: #f3f2f1;
+    color: #252423;
+    font-weight: 600;
+}
+
+/* JSON编辑器样式 */
+.ace_editor {
+    border: 1px solid #d2d0ce;
+    border-radius: 2px;
+}
+
+/* 图表样式 */
+.stChart > div > div > div {
+    background-color: white;
+    border: 1px solid #d2d0ce;
+    border-radius: 2px;
+}
+
+/* 成功消息样式 */
+.stSuccess {
+    background-color: #dff6dd;
+    color: #107c10;
+    border: 1px solid #107c10;
+    border-radius: 2px;
+}
+
+/* 错误消息样式 */
+.stError {
+    background-color: #fde7e9;
+    color: #a4262c;
+    border: 1px solid #a4262c;
+    border-radius: 2px;
+}

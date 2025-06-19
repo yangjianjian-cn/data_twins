@@ -1,0 +1,114 @@
+# Configuration file
+
+# name: regulation 
+# name: finance_user 
+# name: finance_guilty
+source_database:
+  host: localhost
+  port: 5432
+  name: finance_user 
+  user: postgres
+  password: 123456
+
+target_database:
+  host: localhost
+  port: 5432
+  name: test 
+  user: postgres
+  password: 123456
+
+codetables:
+  - loan_status
+  - loan_type
+  - occupation
+
+# 设定字段不需要统计，直接按照规则生成，支持的规则包括
+# 如果指定字段类型为 llm，则由大模型进行判断，确定该字段的类型。
+# Person:
+#   name:
+#     杨兵
+#     花金凤
+#   job:
+#     房地产销售经理/主管
+#     兼职
+#   company:
+#     商软冠联信息有限公司
+#     襄樊地球村网络有限公司
+# Address:
+#   address:
+#     青海省秀云县六枝特郑州路i座 919517
+#     黑龙江省淑兰市新城贾街x座 873062
+#   postcode:
+#     134141
+#     913625
+#   city:
+#     岩市
+#     成市
+#   province:
+#     西藏自治区
+#     青海省
+# Internet:
+#   email:
+#     taojun@example.com
+#     eyi@example.net
+#   user_name:
+#     ganglu
+#     xiulanhao
+#   domain_name:
+#     xiulan.cn
+#     qiangqian.cn
+#   url:
+#     http://yahoo.com
+# Date_time:
+#   date:
+#     1992-04-06
+#     1978-10-28
+#   time:
+#     19:43:58
+#     19:41:21
+#   date_time:
+#     2005-11-22 09:53:52.724349
+#     1977-10-10 05:07:51.694212
+# Phone_number:
+#   phone_number:
+#     13693444760
+#     15348912806
+# Credit_card:
+#   credit_card_number:
+#     3508910411470231
+#     6011704244793908
+#   credit_card_provider:
+#     American Express
+#     Diners Club / Carte Blanche
+# Automotive:
+#   license_plate:
+#     鄂V-44050
+#     新S-34458
+# Misc:
+#   currency_code:
+#     INR
+#     AFN
+#   currency_name:
+#     Malaysian ringgit
+#     Ghanaian cedi
+specified_columns:
+  loan_repayment:
+    - repayment_date: date
+  customer:
+    - customer_name: name
+    - phone_number: phone_number
+    - email: email 
+    - address: address
+    - birth_date: date
+    - province: province
+  penalize:
+    - url: url
+    - docid: postcode
+    - docsource: province
+    - publishdate: date_time
+  accounts:
+    - account_number: credit_card_number 
+    - owner_name: name
+    - region_code: postcode
+    - created_at: date_time
+

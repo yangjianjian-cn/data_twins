@@ -1,0 +1,48 @@
+# Configuration file
+
+# name: regulation 
+# name: finance_user 
+# name: finance_guilty
+source_database:
+  host: 192.168.0.164
+  port: 15432
+  name: dwd_pos_t90
+  user: data_twins
+  password: twins2025
+
+target_database:
+  host: 192.168.0.164
+  port: 15432
+  name: test
+  user: postgres
+  password: 123456
+
+codetables:
+  - loan_status
+  - loan_type
+  - occupation
+
+# 设定字段不需要统计，直接按照规则生成，支持的规则包括
+# 如果指定字段类型为 llm，则由大模型进行判断，确定该字段的类型。
+specified_columns:
+  gtin_dim_sample:
+    - product_name_cn: name
+    - product_name_en: name
+  gtin_fpc_dim_sample:
+    - fpc_product_name_cn: name
+  gtin_price_advance_dim_sample:
+    - full_category_cn: name
+  sales_channel_man_dim_sample:
+    - sale_channel_desc: name
+    - sale_channel_type_name: name
+    - sale_channel_name: name
+    - src_sale_channel_id: name
+  store_dim_sample:
+    - province_name: province
+  t90_sample:
+    - dw_create_time: date
+    - dw_last_update_time: date
+    - sale_date: date
+
+
+
