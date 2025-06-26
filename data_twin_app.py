@@ -1,16 +1,12 @@
 import io
 import json
 import os
-import re
 import tempfile
 from contextlib import redirect_stdout
 
 import pandas as pd
-import psycopg2
 import streamlit as st
 import yaml
-from pandas import DataFrame
-from psycopg2.extras import execute_batch
 from streamlit_ace import st_ace
 
 from gen_data_by_stats import gen_data_by_stats
@@ -18,6 +14,7 @@ from get_db_statistic import get_db_statistic
 from save_data_to_db import save_data_to_db
 from tools.ParquetExporter import ParquetExporter
 from tools.TableDependence import TableConfigurator
+from tools.import_excel_to_postgres import excel_to_db
 
 st.set_page_config(layout="wide", page_title="🚀 数据孪生应用")
 
@@ -49,70 +46,6 @@ def specified_columns_to_df(specified_columns):
             for field_name, field_type in column.items():
                 data.append({"表名": table, "字段名": field_name, "字段类型": field_type})
     return pd.DataFrame(data)
-
-
-def excel_to_db(file, sheet_name, source_database):
-    import_successful = False
-    table_info_list = []  # 用于保存表结构信息
-
-    # 第一个 sheet 作为 schema 定义
-    schema_df = pd.read_excel(file, sheet_name=sheet_name[0])
-    schema_dict = dict(zip(schema_df['col_name'], schema_df['data_type']))
-    st.success("✅ 已成功加载字段类型定义")
-
-    try:
-        conn = psycopg2.connect(
-            host=source_database['host'],
-            port=source_database['port'],
-            database=source_database['name'],
-            user=source_database['user'],
-            password=source_database['password']
-        )
-        cur = conn.cursor()
-
-        for sheet in sheet_names[1:]:
-            data_frame: DataFrame = pd.read_excel(file, sheet_name=sheet)
-
-            table_name = re.sub(r'[^a-zA-Z0-9]+', '_', sheet).strip('_').lower()
-
-            # 删除旧表
-            cur.execute(f"DROP TABLE IF EXISTS {table_name};")
-
-            # 构建列定义
-            columns = []
-            for col in data_frame.columns:
-                col_type = schema_dict.get(col, "TEXT")
-                columns.append(f'"{col}" {col_type}')
-
-            create_table_sql = f'CREATE TABLE "{table_name}" ({", ".join(columns)});'
-            cur.execute(create_table_sql)
-
-            # 插入数据
-            tuples = list(data_frame.head(5).itertuples(index=False, name=None))
-            placeholders = ", ".join(["%s"] * len(data_frame.columns))
-            insert_sql = f'INSERT INTO "{table_name}" VALUES ({placeholders});'
-            execute_batch(cur, insert_sql, tuples)
-
-            # 收集每个表的结构信息
-            table_columns = [(col, schema_dict.get(col, "TEXT")) for col in
-                             data_frame.columns]
-            table_info_list.append({
-                "table_name": table_name,
-                "columns": table_columns
-            })
-
-            st.success(f"✅ Sheet '{sheet}' 已导入表 '{table_name}'")
-
-        conn.commit()
-        cur.close()
-        conn.close()
-        st.info("🎉 所有 sheet 已成功导入数据库！")
-        import_successful = True
-
-    except Exception as e:
-        st.error(f"❌ 导入失败：{str(e)}")
-
-    return import_successful, table_info_list
 
 
 # Function to convert DataFrame back to specified columns format
@@ -168,28 +101,25 @@ if selected_config:
 
     # Main content
     st.header("配置信息")
-
-    if selected_config == 'config_t90.yaml':
-        data_import_successful = False
-        uploaded_file = st.file_uploader("请选择源文件", type=["csv", "xlsx"])
-        if uploaded_file is not None:
-            # 读取 Excel 文件中的所有 sheet 名称
-            xls = pd.ExcelFile(uploaded_file)
-            sheet_names = xls.sheet_names
-            if len(sheet_names) < 1:
-                st.error("Excel 文件至少需要一个 sheet 来定义字段类型！")
-            else:
-                st.success(f"检测到 {len(sheet_names)} 个 sheet：{', '.join(sheet_names)}")
-                data_import_successful, table_info_list = excel_to_db(uploaded_file, sheet_names,
-                                                                      config['source_database'])
-        if data_import_successful:
-            table_names = [table_info['table_name'] for table_info in table_info_list]
-            fields = {
-                table["table_name"]: [{"字段名": col, "类型": typ} for col, typ in table["columns"]]
-                for table in table_info_list
-            }
-            configurator = TableConfigurator(tables=table_names, field_info=fields)
-            configurator.show_config_modal_after_import()
+    data_import_successful = False
+    uploaded_file = st.file_uploader("请选择源文件", type=["csv", "xlsx"])
+    if uploaded_file is not None:
+        # 读取 Excel 文件中的所有 sheet 名称
+        xls = pd.ExcelFile(uploaded_file)
+        sheet_names = xls.sheet_names
+        if len(sheet_names) < 1:
+            st.error("Excel 文件至少需要一个 sheet 来定义字段类型！")
+        else:
+            st.success(f"检测到 {len(sheet_names)} 个 sheet：{', '.join(sheet_names)}")
+            data_import_successful, table_info_list = excel_to_db(uploaded_file, sheet_names, config['source_database'])
+    if data_import_successful:
+        table_names = [table_info['table_name'] for table_info in table_info_list]
+        fields = {
+            table["table_name"]: [{"字段名": col, "类型": typ} for col, typ in table["columns"]]
+            for table in table_info_list
+        }
+        configurator = TableConfigurator(tables=table_names, field_info=fields)
+        configurator.show_config_modal_after_import(source_db)
 
     # Display and edit code tables
     st.subheader("代码表")

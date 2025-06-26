@@ -26,12 +26,22 @@ def connect_to_db(config):
     db_config = config['source_database']
     conn_string = f"postgresql://{db_config['user']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['name']}"
     engine = create_engine(conn_string)
-    return engine, engine.connect()
+
+    # 强制清理连接池中的所有连接（确保不会复用旧连接）
+    engine.dispose()
+
+    with engine.connect() as conn:
+        return engine, conn
 
 
 def get_tables(engine):
-    query = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'"
-    return pd.read_sql(query, engine)['table_name'].tolist()
+    query = """
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public'
+    """
+    with engine.connect() as conn:
+        return pd.read_sql(query, conn)['table_name'].tolist()
 
 
 def get_columns(engine, table):
@@ -214,7 +224,6 @@ def get_db_statistic(config_file='config.yaml', dependency_file='dependency.json
     result = {}
 
     for table in tables:
-        print("表:%s", table)
         if table in codetables:
             result[table] = {
                 "is_codetable": True,
@@ -234,7 +243,6 @@ def get_db_statistic(config_file='config.yaml', dependency_file='dependency.json
                 "total_rows": int(pd.read_sql(f"SELECT COUNT(*) FROM {table}", engine).iloc[0, 0]),
                 "total_columns": len(columns)
             }
-            print("表的总行数 和 总列数:", table_stats['total_rows'], table_stats['total_columns'])
 
             # 添加依赖关系信息
             table_dependency = dependency.get(table, {})
@@ -370,7 +378,7 @@ def get_db_statistic(config_file='config.yaml', dependency_file='dependency.json
     # print(json.dumps(result, indent=2, ensure_ascii=False, cls=DateTimeEncoder))
 
     # Dump JSON to file using the custom encoder
-    with open('db_stats.json', 'w',encoding='utf-8') as f:
+    with open('db_stats.json', 'w', encoding='utf-8') as f:
         json.dump(result, f, indent=2, ensure_ascii=False, cls=DateTimeEncoder)
 
 

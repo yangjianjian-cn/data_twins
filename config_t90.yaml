@@ -7,8 +7,8 @@ source_database:
   host: 192.168.0.164
   port: 15432
   name: dwd_pos_t90
-  user: data_twins
-  password: twins2025
+  user: postgres
+  password: 123456
 
 target_database:
   host: 192.168.0.164
@@ -18,31 +18,27 @@ target_database:
   password: 123456
 
 codetables:
-  - loan_status
-  - loan_type
-  - occupation
+  - barcode_type
+  - item_nature
+  - category_cn
+  - brand_cn
+  - fpc_size_segment_cn
 
 # 设定字段不需要统计，直接按照规则生成，支持的规则包括
 # 如果指定字段类型为 llm，则由大模型进行判断，确定该字段的类型。
 specified_columns:
-  gtin_dim_sample:
-    - product_name_cn: name
-    - product_name_en: name
-  gtin_fpc_dim_sample:
-    - fpc_product_name_cn: name
-  gtin_price_advance_dim_sample:
-    - full_category_cn: name
-  sales_channel_man_dim_sample:
-    - sale_channel_desc: name
-    - sale_channel_type_name: name
-    - sale_channel_name: name
-    - src_sale_channel_id: name
   store_dim_sample:
+    - cust_id: name
     - province_name: province
-  t90_sample:
-    - dw_create_time: date
-    - dw_last_update_time: date
-    - sale_date: date
-
+    - city_name: city
+    - district_name: district
+    - store_address: street_address
+    - regional_manager_email: email
+    - premium_receiver: company
+    - posm_receiver_phone: phone_number
+    - posm_address: address
+    - cust_id: user_name
+  gtin_fpc_dim_sample:
+    - cust_id:
 
 

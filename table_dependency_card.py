@@ -14,13 +14,102 @@ tables = [
 
 # 模拟每个表的字段信息
 field_info = {
-    "gtin_dim_sample": [{"字段名": "gtin", "类型": "string"}, {"字段名": "product_name", "类型": "string"}],
     "gtin_fpc_dim_sample": [{"字段名": "fpc_id", "类型": "string"}, {"字段名": "gtin", "类型": "string"}],
     "gtin_price_advance_dim_sample": [{"字段名": "price_date", "类型": "date"}, {"字段名": "price", "类型": "float"}],
     "sales_channel_man_dim_sample": [{"字段名": "channel_id", "类型": "string"}, {"字段名": "channel_name", "类型": "string"}],
     "store_dim_sample": [{"字段名": "store_id", "类型": "string"}, {"字段名": "store_name", "类型": "string"}],
     "t90_sample": [{"字段名": "order_id", "类型": "string"}, {"字段名": "gtin", "类型": "string"},
-                   {"字段名": "store_id", "类型": "string"}]
+                   {"字段名": "store_id", "类型": "string"}],
+    "gtin_dim_sample": [
+        {"字段名": "gtin_skey", "类型": "string"},
+        {"字段名": "gtin_code", "类型": "string"},
+        {"字段名": "barcode_type", "类型": "string"},
+        {"字段名": "fpc_code", "类型": "string"},
+        {"字段名": "product_source", "类型": "string"},
+        {"字段名": "item_status", "类型": "string"},
+        {"字段名": "status", "类型": "string"},
+        {"字段名": "item_nature", "类型": "string"},
+        {"字段名": "shipper_barcode", "类型": "string"},
+        {"字段名": "item_barcode", "类型": "string"},
+        {"字段名": "inner_barcode", "类型": "string"},
+        {"字段名": "sell_barcode", "类型": "string"},
+        {"字段名": "product_name_cn", "类型": "string"},
+        {"字段名": "product_specification", "类型": "string"},
+        {"字段名": "product_name_en", "类型": "string"},
+        {"字段名": "sector", "类型": "string"},
+        {"字段名": "sub_sector", "类型": "string"},
+        {"字段名": "category", "类型": "string"},
+        {"字段名": "brand", "类型": "string"},
+        {"字段名": "sub_brand", "类型": "string"},
+        {"字段名": "brand_segment", "类型": "string"},
+        {"字段名": "brand_form", "类型": "string"},
+        {"字段名": "brand_element", "类型": "string"},
+        {"字段名": "category_code", "类型": "string"},
+        {"字段名": "category_en", "类型": "string"},
+        {"字段名": "full_category_en", "类型": "string"},
+        {"字段名": "category_cn", "类型": "string"},
+        {"字段名": "brand_code", "类型": "string"},
+        {"字段名": "brand_en", "类型": "string"},
+        {"字段名": "full_brand_en", "类型": "string"},
+        {"字段名": "brand_cn", "类型": "string"},
+        {"字段名": "sub_brand_code", "类型": "string"},
+        {"字段名": "sub_brand_en", "类型": "string"},
+        {"字段名": "sub_brand_cn", "类型": "string"},
+        {"字段名": "product_form_code", "类型": "string"},
+        {"字段名": "product_form_en", "类型": "string"},
+        {"字段名": "product_form_cn", "类型": "string"},
+        {"字段名": "brand_product_form_en", "类型": "string"},
+        {"字段名": "brand_product_form_cn", "类型": "string"},
+        {"字段名": "variant_code", "类型": "string"},
+        {"字段名": "variant_en", "类型": "string"},
+        {"字段名": "full_variant_en", "类型": "string"},
+        {"字段名": "variant_cn", "类型": "string"},
+        {"字段名": "full_variant_cn", "类型": "string"},
+        {"字段名": "price_tier", "类型": "string"},
+        {"字段名": "new_form", "类型": "string"},
+        {"字段名": "flag", "类型": "string"},
+        {"字段名": "funded_product_form", "类型": "string"},
+        {"字段名": "sap_size_total", "类型": "string"},
+        {"字段名": "sap_size_main_product", "类型": "string"},
+        {"字段名": "sap_size_combined", "类型": "string"},
+        {"字段名": "cn_size_total", "类型": "string"},
+        {"字段名": "cn_size_main_product", "类型": "string"},
+        {"字段名": "cn_size_combined", "类型": "string"},
+        {"字段名": "cn_size_unit", "类型": "string"},
+        {"字段名": "diaper_size", "类型": "string"},
+        {"字段名": "size_segment", "类型": "string"},
+        {"字段名": "size_segment_cn", "类型": "string"},
+        {"字段名": "case_cnt", "类型": "string"},
+        {"字段名": "su_factor", "类型": "string"},
+        {"字段名": "net_weight", "类型": "string"},
+        {"字段名": "gross_weight", "类型": "string"},
+        {"字段名": "weight_unit", "类型": "string"},
+        {"字段名": "case_volume", "类型": "string"},
+        {"字段名": "volume_unit", "类型": "string"},
+        {"字段名": "components", "类型": "string"},
+        {"字段名": "sos_date", "类型": "string"},
+        {"字段名": "length", "类型": "string"},
+        {"字段名": "width", "类型": "string"},
+        {"字段名": "height", "类型": "string"},
+        {"字段名": "case_length", "类型": "string"},
+        {"字段名": "case_width", "类型": "string"},
+        {"字段名": "case_height", "类型": "string"},
+        {"字段名": "dim_unit", "类型": "string"},
+        {"字段名": "ni_flag", "类型": "string"},
+        {"字段名": "ni_project_name", "类型": "string"},
+        {"字段名": "ni_sos_date", "类型": "string"},
+        {"字段名": "local_hierarchy_flag", "类型": "string"},
+        {"字段名": "last_shipment_date", "类型": "string"},
+        {"字段名": "inactive_date", "类型": "string"},
+        {"字段名": "bu_attr", "类型": "string"},
+        {"字段名": "update_type", "类型": "string"},
+        {"字段名": "import_item_type_code", "类型": "string"},
+        {"字段名": "import_item_type_name", "类型": "string"},
+        {"字段名": "category_2_code", "类型": "string"},
+        {"字段名": "category_2_name_en", "类型": "string"},
+        {"字段名": "full_category_2_name_en", "类型": "string"},
+        {"字段名": "category_2_name_cn", "类型": "string"}
+    ]
 }
 
 # 初始化默认配置
@@ -129,36 +218,47 @@ def display_card_for_field(row, table_name, index):
 def render_main_page(tables):
     st.title("🧾 表结构配置工具")
 
-    # 将下拉选择和保存按钮并排显示
-    col1, col2 = st.columns([4, 1],vertical_alignment="bottom")
-
+    col1, col2, col3 = st.columns([4, 1, 1])
     with col1:
         selected_table = st.selectbox("请选择要配置的表", tables, key="main_table_selector")
-
     with col2:
-        if st.button("💾 保存所有表", use_container_width=True):
-            file_path = save_all_to_file()
-            st.toast(f"✅ 所有配置已保存到 `{file_path}`", icon='📄')
+        if st.button("💾 保存当前表", use_container_width=True):
+            if selected_table in st.session_state.config:
+                st.toast(f"✅ `{selected_table}` 配置已保存！", icon='📄')
+            else:
+                st.warning("⚠️ 当前表没有可编辑的配置！")
+    with col3:
+        if st.button("📁 保存全部", use_container_width=True):
+            st.toast(f"✅ 所有配置已保存！", icon='📄')
 
-    st.divider()
+    st.markdown("---")
 
     if selected_table:
         df = get_initial_table_data(selected_table)
 
-        updated_rows = []
+        # 搜索框
+        search_term = st.text_input("🔍 搜索字段名", "")
+        if search_term:
+            df = df[df["字段名"].str.contains(search_term, case=False, na=False)]
 
-        for i, row in df.iterrows():
-            result = display_card_for_field(row, selected_table, i)
-            if result:
-                updated_rows.append(result)
+        # Tabs 切换
+        tab1, tab2 = st.tabs(["🛠️ 字段管理", "👀 当前配置"])
 
-        if st.button("✅ 保存当前表配置", use_container_width=True):
-            new_df = pd.DataFrame(updated_rows)
-            save_configuration(selected_table, new_df)
-            st.success("✅ 当前表配置已保存！")
+        with tab1:
+            st.markdown('<div>', unsafe_allow_html=True)
+            updated_rows = []
+            for i, row in df.iterrows():
+                result = display_card_for_field(row, selected_table, i)
+                if result:
+                    updated_rows.append(result)
 
-        with st.expander("👀 查看当前表配置", expanded=False):
-            st.json(st.session_state.config[selected_table])
+            if st.button("✅ 保存当前表配置", use_container_width=True, type="primary"):
+                new_df = pd.DataFrame(updated_rows)
+                save_configuration(selected_table, new_df)
+                st.success("✅ 当前表配置已保存！")
+
+        with tab2:
+            st.json(st.session_state.config.get(selected_table, []))
 
 
 # ========== 运行入口 ===========

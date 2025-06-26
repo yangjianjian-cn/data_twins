@@ -1,22 +1,22 @@
 {
     "t90_sample": {
         "primary_key": [],
-        "dep_table": "store_dim_sample",
-        "dep_relation": "1:5",
+        "dep_table": "",
+        "dep_relation": "",
         "dependencies": {
-            "gtin_code": {
-                "field": "store_code",
+            "": {
+                "field": "",
                 "func": ""
             }
         }
     },
     "gtin_dim_sample": {
-        "primary_key": [],
-        "dep_table": "t90_sample",
+        "primary_key": "",
+        "dep_table": "gtin_fpc_dim_sample",
         "dep_relation": "1:5",
         "dependencies": {
-            "gtin_skey": {
-                "field": "gtin_code",
+            "barcode_type": {
+                "field": "cust_id",
                 "func": ""
             }
         }
@@ -35,10 +35,10 @@
     "gtin_fpc_dim_sample": {
         "primary_key": [],
         "dep_table": "",
-        "dep_relation": "1:5",
+        "dep_relation": "",
         "dependencies": {
-            "cust_product_skey": {
-                "field": "gtin_code",
+            "": {
+                "field": "",
                 "func": ""
             }
         }

@@ -100,19 +100,24 @@ def generate_data(db_stats, sorted_tables, num_records=10):
     unique_values = defaultdict(set)  # 用于跟踪唯一字段的值
 
     # 先生成代码表数据
+    print("加载代码表")
     for table in sorted_tables:
         if table and db_stats[table].get('is_codetable', False):
             code_table_data[table] = db_stats[table].get('data', [])
-            print(f"加载代码表 {table}，共 {len(code_table_data[table])} 条记录")
+            print(f"{table}，共 {len(code_table_data[table])} 条记录")
 
     all_data = code_table_data.copy()
 
+    print("\n加载非代码表")
     for _ in range(num_records):
+        print(f"第{_ + 1}条")
         current_record = code_table_data.copy()
         for table in sorted_tables:
             if not db_stats[table].get('is_codetable', False):
                 current_record[table] = []
+                # 非代码表生成数据
                 generate_table_data(db_stats, table, current_record, unique_values)
+
         # 将当前记录合并到 all_data, 要跳过 code_table_data 中的数据
         for table, data in current_record.items():
             if table not in code_table_data:
@@ -120,21 +125,34 @@ def generate_data(db_stats, sorted_tables, num_records=10):
                     all_data[table] = []
                 all_data[table] = all_data[table] + data
 
+    all_data = {k: v for k, v in all_data.items() if k not in code_table_data}
     return all_data
+
+
+"""
+db_stats, table, current_record, unique_values
+"""
 
 
 def generate_table_data(db_stats, table, all_data, unique_values):
     table_info = db_stats[table]
     dependency = table_info.get('dependency', {})
     dep_table = dependency.get('dep_table')
-    print("table, dep_table:", table, dep_table)
+    print(f"表:{table}, 关联表:{dep_table}")
 
+    # del
     if dep_table:
         if dep_table not in all_data or len(all_data[dep_table]) == 0:
             return
+
+        # 依赖表的最后一条记录作为“父记录”
         parent_record = all_data[dep_table][-1]
+
+        # 从配置项中读取类似 "1:3" 的字符串，拆分为最小和最大记录数。
         min_records, max_records = map(int, dependency['dep_relation'].split(':'))
+        # 随机决定要生成多少条子记录。
         num_records = random.randint(min_records, max_records)
+        print(f"随机生成{num_records}条子记录")
 
         for _ in range(num_records):
             record = generate_record(db_stats, table, parent_record, dependency, unique_values, all_data)
@@ -144,7 +162,6 @@ def generate_table_data(db_stats, table, all_data, unique_values):
         # 如果没有依赖表，生成一条记录
         record = generate_record(db_stats, table, None, None, unique_values, all_data)
         if record:
-            # print("record:", record)
             all_data[table].append(record)
 
 
@@ -154,17 +171,18 @@ def generate_record(db_stats, table, parent_record, dependency, unique_values, a
 
     for column in table_info['columns']:
         column_name = column['name']
-
+        # del
         if dependency and parent_record and column_name in dependency.get('dependencies', {}):
             dep_info = dependency['dependencies'][column_name]
             parent_field = dep_info['field']
             func = dep_info['func']
-
             if func:
                 # 执行自定义函数
                 value = eval(func)(parent_record[parent_field])
             else:
+                # 父记录中关联字段的值，作为子记录字段的值
                 value = parent_record[parent_field]
+            print(f"字段:{column_name},关联字段:{parent_field},值:{value}")
         else:
             value = generate_column_data(table, column, unique_values, all_data)
         if value is None:
@@ -177,31 +195,47 @@ def generate_record(db_stats, table, parent_record, dependency, unique_values, a
 
 def generate_column_data(table, column, unique_values, all_data):
     # print(f"正在生成表 {table} 列 {column['name']},类型为:{column['type']} 的数据")
+    # 外键
     if 'foreign_key' in column:
         fk_info = column['foreign_key']
         if fk_info is not None:
             foreign_table = fk_info['foreign_table_name']
             foreign_column = fk_info['foreign_column_name']
             if foreign_table in all_data and all_data[foreign_table]:
-                return random.choice(all_data[foreign_table])[foreign_column]
+                foreign_column_value = random.choice(all_data[foreign_table])[foreign_column]
+                print(
+                    f"字段 {column['name']},关联表 {foreign_table},关联字段 {foreign_column},值(父字段随机一条) {foreign_column_value}")
+                return foreign_column_value
             else:
                 return None  # 如果外键表还没有数据，返回 None
 
-    is_unique = column.get('is_unique', False) or column.get('is_primary_key', False)
-
-    if is_unique:
+    # is_unique = column.get('is_unique', False) or column.get('is_primary_key', False)
+    is_primary = column.get('is_primary_key', False)
+    # 主键
+    if is_primary:
         max_attempts = 100  # 最大尝试次数
-        unique_key = f"{table}.{column['name']}"
+        primary_key = f"{table}.{column['name']}"
+        print("主键:", primary_key)
+
         for _ in range(max_attempts):
-            value = generate_unique_data(column, unique_values.get(unique_key, set()))
-            if value is not None and value not in unique_values.get(unique_key, set()):
-                if unique_key not in unique_values:
-                    unique_values[unique_key] = set()
-                unique_values[unique_key].add(value)
-                return value
+            primary_value = generate_unique_data(column, unique_values.get(primary_key, set()))
+            if primary_value is not None and primary_value not in unique_values.get(primary_key, set()):
+                if primary_key not in unique_values:
+                    unique_values[primary_key] = set()
+                unique_values[primary_key].add(primary_value)
+                return primary_value
         return None  # 如果无法生成唯一值，则返回 None
+
+    code_key = all_data.get(column['name'])
+    if code_key:
+        options = all_data[column['name']]
+        code_value = random.choice(options)["value"]
+        print(f"字段 {column['name']},其值取自代码表:{code_value}")
+        return code_value
     else:
-        return generate_single_column_data(column)
+        # 其它列
+        other_column_val = generate_single_column_data(column)
+        return other_column_val
 
 
 def generate_unique_data(column, existing_values):
@@ -233,14 +267,15 @@ def generate_single_column_data(column):
     # 如果不是指定的Faker类型，则按原来的逻辑处理
     if column['type'] == 'boolean':
         return random.choice([True, False])
-    elif column['type'] in ('integer', 'bigint'):
+    elif column['type'].lower() in ('integer', 'bigint', 'smallint'):
         return generate_numeric_data(column, is_integer=True)
     elif column['type'] in ('numeric', 'real', 'double precision'):
         return generate_numeric_data(column, is_integer=False)
     elif column['type'] in ('character', 'character varying'):
         return generate_character_data(column)
     elif column['type'] == 'text':
-        return generate_text_data(column)
+        # return generate_text_data(column)
+        return "未模拟"
     elif column['type'] in ('date', 'timestamp', 'timestamp without time zone', 'timestamp with time zone'):
         return generate_date_data(column)
     else:
@@ -385,6 +420,8 @@ def generate_text_data(column):
 
 
 def generate_date_data(column):
+    print(column)
+
     stats = column.get('stats', {})
     if stats and 'min_date' in stats and 'max_date' in stats:
         min_date = parse_date(stats.get('min_date', '1970-01-01'))
@@ -394,7 +431,6 @@ def generate_date_data(column):
         max_date = datetime.now()
 
     generated_date = fake.date_time_between(start_date=min_date, end_date=max_date)
-
     # 检测样本数据的格式
     sample_format = get_sample_format(column)
 
@@ -406,6 +442,10 @@ def generate_date_data(column):
 
 
 def parse_date(date_string):
+    # 手动去掉时区信息
+    if '+' in date_string:
+        date_string = date_string.split('+')[0]
+
     if date_string == '-30y':
         return datetime.now() - timedelta(days=30 * 365)
     elif date_string == 'now':
@@ -422,10 +462,7 @@ def parse_date(date_string):
 def gen_data_by_stats(stats_file='db_stats.json', num_records=10):
     db_stats = load_db_stats(stats_file)
     dependency_graph = build_dependency_graph(db_stats)
-
     sorted_tables = topological_sort(dependency_graph)
-    sorted_tables = [table for table in sorted_tables if table]  # 去除空字符串
-
     generated_data = generate_data(db_stats, sorted_tables, num_records)
 
     return generated_data
